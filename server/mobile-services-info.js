@@ -147,7 +147,12 @@ const DeviceSecurityService = {
     kind: 'ConfigMap'
   },
   getClientConfig: (_, appname, kubeclient) => {
+    if (!mssAppsNamespace) {
+      return null;
+    }
+
     const configmapName = `${appname}-security`;
+
     return kubeclient.api.v1
       .namespaces(mssAppsNamespace)
       .configmaps(configmapName)

@@ -191,7 +191,9 @@ async function run() {
   }
   const kubeclient = await initKubeClient();
   updateAppsAndWatch(NAMESPACE || DEFAULT_NAMESPACE, kubeclient);
-  watchMobileSecurityService(MSS_NAMESPACE, kubeclient);
+  if (MSS_NAMESPACE) {
+    watchMobileSecurityService(MSS_NAMESPACE, kubeclient);
+  }
   app.listen(port, () => console.log(`Listening on port ${port}`));
 }
 
