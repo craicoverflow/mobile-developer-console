@@ -1,11 +1,15 @@
 import { CustomResource } from './customresource';
 
 export class MetricsCR extends CustomResource {
-  getConfiguration() {
-    const metricsUrl = this.spec.get('metricsUrl');
+  // eslint-disable-next-line class-methods-use-this
+  isReady() {
+    return true;
+  }
+
+  getConfiguration(url) {
     const grafanaUrl = this.spec.get('grafanaUrl');
     return [
-      { type: 'href', label: 'Metrics Endpoint', value: metricsUrl },
+      { type: 'href', label: 'Metrics Endpoint', value: url },
       {
         type: 'href',
         label: 'Grafana URL',
@@ -35,9 +39,18 @@ export class MetricsCR extends CustomResource {
     };
   }
 
-  static newInstance(params) {
+  static newInstance({ CLIENT_ID }) {
     // TODO: implement me
-    return {};
+    return {
+      apiVersion: 'metrics.aerogear.org/v1alpha1',
+      kind: 'AppMetricsConfig',
+      metadata: {
+        name: `${CLIENT_ID}`,
+        labels: {
+          'mobile.aerogear.org/client': CLIENT_ID
+        }
+      }
+    };
   }
 
   static getDocumentationUrl() {

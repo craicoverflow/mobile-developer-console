@@ -1,7 +1,7 @@
 import { CustomResource } from './customresource';
 import { KeycloakRealmCR } from './keycloakrealmcr';
 import { PushVariantCR } from './pushvariantcr';
-import { MetricsCR } from './metricscr';
+import { MetricsCR } from './appmetricsconfigcr';
 import { DataSyncCR } from './datasync';
 import { MobileSecurityServiceAppCR } from './mobilesecurityserviceappcr';
 

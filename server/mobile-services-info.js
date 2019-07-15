@@ -90,13 +90,13 @@ const MetricsService = {
   icon: '/img/metrics.svg',
   description: 'Mobile App Metrics Service',
   bindCustomResource: {
-    name: 'metricsapps',
+    name: 'appmetricsconfigs',
     version: 'v1alpha1',
-    group: 'aerogear.org',
-    kind: 'MetricsApp'
+    group: 'metrics.aerogear.org',
+    kind: 'AppMetricsConfig'
   },
   getClientConfig: (namespace, appname, kubeclient) => {
-    const configmapName = `${appname}-app-metrics`;
+    const configmapName = `${appname}-metrics`;
     return kubeclient.api.v1
       .namespaces(namespace)
       .configmaps(configmapName)
