@@ -1,4 +1,5 @@
 const url = require('url');
+const appMetricsConfigCRD = require('./app-metrics-config-crd.json');
 
 const PUSH_SERVIE_TYPE = 'push';
 const IDM_SERVICE_TYPE = 'keycloak';
@@ -95,35 +96,31 @@ const MetricsService = {
     group: 'metrics.aerogear.org',
     kind: 'AppMetricsConfig'
   },
-  getClientConfig: (namespace, appname, kubeclient) => {
-    const configmapName = `${appname}-metrics`;
-    return kubeclient.api.v1
-      .namespaces(namespace)
-      .configmaps(configmapName)
+  getClientConfig: (namespace, appname, kubeclient) =>
+    kubeclient.apis[appMetricsConfigCRD.spec.group].v1alpha1
+      .namespace(namespace)
+      .appmetricsconfigs(appname)
       .get()
       .then(resp => resp.body)
-      .then(configmap => {
-        if (configmap) {
-          const sdkConfig = JSON.parse(configmap.data.SDKConfig);
-
+      .then(config => {
+        if (config) {
           return {
-            id: configmap.metadata.uid,
+            id: config.metadata.uid,
             name: METRICS_SERVICE_TYPE,
             type: METRICS_SERVICE_TYPE,
-            url: sdkConfig.url
+            url: config.status.host
           };
         }
         return null;
       })
       .catch(err => {
         if (err && err.statusCode && err.statusCode === 404) {
-          console.info(`Can not find configmap ${configmapName}`);
+          console.info(`Can not find AppMetricsConfig ${appname}`);
         } else {
-          console.warn(`Error when fetch configmap ${configmapName}`, err);
+          console.warn(`Error when fetch AppMetricsConfig ${appname}`, err);
         }
         return null;
-      });
-  }
+      })
 };
 
 const DataSyncService = {

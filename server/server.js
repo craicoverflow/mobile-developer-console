@@ -17,6 +17,7 @@ const {
 } = require('./mobile-services-info');
 const { updateAppsAndWatch } = require('./appServices');
 const mobileClientCRD = require('./mobile-client-crd.json');
+const appMetricsConfigCRD = require('./app-metrics-config-crd.json');
 
 const app = express();
 
@@ -167,6 +168,7 @@ async function initKubeClient() {
     const kubeclient = new Client({ backend });
     await kubeclient.loadSpec();
     kubeclient.addCustomResourceDefinition(mobileClientCRD);
+    kubeclient.addCustomResourceDefinition(appMetricsConfigCRD);
     return kubeclient;
   } catch (e) {
     console.error('Failed to init kube client', e);
