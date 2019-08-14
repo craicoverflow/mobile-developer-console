@@ -16,10 +16,7 @@ const KEYCLOAK_SECRET_SUFFIX = '-install-config';
 const DATASYNC_CONFIGMAP_SUFFIX = '-data-sync-binding';
 const MOBILE_SECURITY_SUFFIX = '-security';
 
-let updating = false;
-
 function updateAll(namespace, kubeclient) {
-  updating = true;
   console.log('Check services for all apps');
   return kubeclient.apis[mobileClientCRD.spec.group].v1alpha1
     .namespace(namespace)
@@ -28,9 +25,6 @@ function updateAll(namespace, kubeclient) {
     .then(mobileclientList => mobileclientList.items)
     .then(mobileclients => mobileclients.map(mobileclient => updateApp(namespace, mobileclient, kubeclient)))
     .then(promises => Promise.all(promises))
-    .then(() => {
-      updating = false;
-    })
     .catch(err => console.error(`Failed to update apps due to error`, err));
 }
 
@@ -67,6 +61,7 @@ function getServicesForApp(namespace, app, kubeclient) {
 
 async function updateAppsAndWatch(namespace, kubeclient) {
   updateAll(namespace, kubeclient).then(async () => {
+    console.log('update alllll');
     watchMobileClients(namespace, kubeclient);
     watchDataSyncConfigMaps(namespace, kubeclient);
     watchKeyCloakSecrets(namespace, kubeclient);
@@ -151,7 +146,7 @@ async function watchAndroidVariants(namespace, kubeclient) {
     .androidvariants.getObjectStream();
 
   androidVariantStream.on('data', event => {
-    if (event.object && event.object.status && !updating) {
+    if (event.object && event.object.status) {
       updateAll(namespace, kubeclient);
     }
   });
@@ -174,7 +169,7 @@ async function watchIosVariants(namespace, kubeclient) {
     .iosvariants.getObjectStream();
 
   iosVariantStream.on('data', event => {
-    if (event.object && event.object.status && !updating) {
+    if (event.object && event.object.status) {
       updateAll(namespace, kubeclient);
     }
   });
